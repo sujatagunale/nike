@@ -6,7 +6,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-light-100 border-b border-light-300 sticky top-0 z-50">
+    <nav className="bg-light-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -25,42 +25,50 @@ export default function Navbar() {
             <div className="ml-10 flex items-baseline space-x-8">
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors"
+                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors uppercase tracking-wide"
               >
-                Men
+                MAN
               </a>
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors"
+                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors uppercase tracking-wide"
               >
-                Women
+                WOMAN
               </a>
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors"
+                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors uppercase tracking-wide"
               >
-                Kids
+                KIDS
               </a>
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors"
+                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors uppercase tracking-wide"
               >
-                Sale
+                COLLECTIONS
+              </a>
+              <a
+                href="#"
+                className="text-dark-900 hover:text-dark-700 px-3 py-2 text-body font-body-medium transition-colors uppercase tracking-wide"
+              >
+                CONTACT
               </a>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="text-dark-900 hover:text-dark-700 p-2">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="hidden md:flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <svg className="h-4 w-4 text-dark-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </button>
-            <button className="text-dark-900 hover:text-dark-700 p-2">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01" />
+              <span className="text-body text-dark-700 uppercase tracking-wide">SEARCH</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <svg className="h-4 w-4 text-dark-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-            </button>
+              <span className="text-body text-dark-700 uppercase tracking-wide">MY CART (1)</span>
+            </div>
           </div>
 
           <div className="md:hidden">
@@ -84,27 +92,33 @@ export default function Navbar() {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-light-300">
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium"
+                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium uppercase tracking-wide"
               >
-                Men
+                MAN
               </a>
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium"
+                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium uppercase tracking-wide"
               >
-                Women
+                WOMAN
               </a>
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium"
+                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium uppercase tracking-wide"
               >
-                Kids
+                KIDS
               </a>
               <a
                 href="#"
-                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium"
+                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium uppercase tracking-wide"
               >
-                Sale
+                COLLECTIONS
+              </a>
+              <a
+                href="#"
+                className="text-dark-900 hover:text-dark-700 block px-3 py-2 text-body font-body-medium uppercase tracking-wide"
+              >
+                CONTACT
               </a>
             </div>
           </div>
