@@ -1,16 +1,14 @@
-import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { pgTable, uuid, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { userRoleEnum } from '../enums/user-role';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  emailVerified: boolean('email_verified').notNull().default(false),
   name: text('name').notNull(),
+  image: text('image'),
   role: userRoleEnum('role').notNull().default('user'),
+  isAnonymous: boolean('is_anonymous').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
-
-
-export const insertUserSchema = createInsertSchema(users);
-export const selectUserSchema = createSelectSchema(users);
