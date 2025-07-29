@@ -1,6 +1,6 @@
-import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import SocialProviders from "@/components/SocialProviders";
+import Link from "next/link";
 
 export default function SignUpPage() {
   return (
@@ -19,7 +19,7 @@ export default function SignUpPage() {
 
       <div className="text-center">
         <h1 className="font-jost text-heading-2 font-bold text-dark-900 mb-2">
-          Create your Nike account
+          Create Your Account
         </h1>
         <p className="font-jost text-body text-dark-700">
           Please enter your details to create your account
@@ -44,11 +44,17 @@ export default function SignUpPage() {
       <div className="text-center">
         <p className="font-jost text-caption text-dark-500">
           By creating an account, you agree to our{" "}
-          <Link href="#" className="text-dark-900 hover:text-orange transition-colors">
+          <Link
+            href="#"
+            className="text-dark-900 hover:text-orange transition-colors"
+          >
             Terms of Service
           </Link>{" "}
           and{" "}
-          <Link href="#" className="text-dark-900 hover:text-orange transition-colors">
+          <Link
+            href="#"
+            className="text-dark-900 hover:text-orange transition-colors"
+          >
             Privacy Policy
           </Link>
         </p>

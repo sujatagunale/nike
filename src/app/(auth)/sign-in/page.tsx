@@ -1,6 +1,6 @@
-import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import SocialProviders from "@/components/SocialProviders";
+import Link from "next/link";
 
 export default function SignInPage() {
   return (
@@ -19,7 +19,7 @@ export default function SignInPage() {
 
       <div className="text-center">
         <h1 className="font-jost text-heading-2 font-bold text-dark-900 mb-2">
-          Welcome back to Nike!
+          Welcome Back
         </h1>
         <p className="font-jost text-body text-dark-700">
           Please enter your details to sign in your account
