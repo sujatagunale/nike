@@ -1,5 +1,6 @@
 import AuthForm from "@/components/AuthForm";
 import SocialProviders from "@/components/SocialProviders";
+import GuestSessionButton from "@/components/GuestSessionButton";
 import Link from "next/link";
 
 export default function SignInPage() {
@@ -40,6 +41,10 @@ export default function SignInPage() {
       </div>
 
       <AuthForm mode="signin" />
+
+      <div className="text-center">
+        <GuestSessionButton />
+      </div>
 
       <div className="text-center text-caption font-jost text-dark-500">
         © 2024 Nike
