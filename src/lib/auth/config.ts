@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { anonymous } from 'better-auth/plugins/anonymous';
 import { db } from '../db';
 
 export const auth = betterAuth({
@@ -10,6 +11,21 @@ export const auth = betterAuth({
     enabled: true,
   },
   socialProviders: {
-    // Add social providers as needed
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      enabled: !!process.env.GOOGLE_CLIENT_ID,
+    },
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID || '',
+      clientSecret: process.env.APPLE_CLIENT_SECRET || '',
+      enabled: !!process.env.APPLE_CLIENT_ID,
+    },
   },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+  },
+  plugins: [
+    anonymous(),
+  ],
 });
