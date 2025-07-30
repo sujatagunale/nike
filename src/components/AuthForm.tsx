@@ -6,9 +6,10 @@ import { Eye, EyeOff } from "lucide-react";
 interface AuthFormProps {
   mode: "signin" | "signup";
   onSubmit: (data: { email: string; password: string; name?: string }) => void;
+  isLoading?: boolean;
 }
 
-export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
+export default function AuthForm({ mode, onSubmit, isLoading = false }: AuthFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -91,9 +92,10 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
 
       <button
         type="submit"
-        className="w-full bg-orange hover:bg-orange/90 text-light-100 font-jost font-medium py-3 px-4 rounded-lg transition-colors"
+        disabled={isLoading}
+        className="w-full bg-orange hover:bg-orange/90 disabled:bg-orange/50 disabled:cursor-not-allowed text-light-100 font-jost font-medium py-3 px-4 rounded-lg transition-colors"
       >
-        {mode === "signin" ? "Sign In" : "Sign Up"} →
+        {isLoading ? "Loading..." : `${mode === "signin" ? "Sign In" : "Sign Up"} →`}
       </button>
 
       {mode === "signin" && (
