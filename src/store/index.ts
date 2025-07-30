@@ -3,7 +3,10 @@ import { create } from 'zustand';
 interface User {
   id: string;
   email: string;
-  name?: string;
+  name?: string | null;
+  isGuest?: boolean | null;
+  emailVerified?: boolean | null;
+  image?: string | null;
 }
 
 interface AppState {

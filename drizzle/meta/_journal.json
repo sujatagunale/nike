@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1753897167959,
+      "tag": "0000_white_young_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1753897298415,
+      "tag": "0001_rapid_jack_murdock",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753897414366,
+      "tag": "0002_aspiring_sinister_six",
+      "breakpoints": true
+    }
+  ]
+}

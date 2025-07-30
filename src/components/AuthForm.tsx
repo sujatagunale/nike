@@ -1,35 +1,48 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { signUp, signIn } from "@/lib/auth/actions";
+import { useAppStore } from "@/store";
 
 interface AuthFormProps {
   mode: "signin" | "signup";
-  onSubmit: (data: { email: string; password: string; name?: string }) => void;
 }
 
-export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+export default function AuthForm({ mode }: AuthFormProps) {
+  const [error, setError] = useState<string>("");
+  const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
+  const { setUser } = useAppStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const handleSubmit = async (formData: FormData) => {
+    setError("");
+    
+    startTransition(async () => {
+      try {
+        const result = mode === "signup" 
+          ? await signUp(formData)
+          : await signIn(formData);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+        if (!result.success) {
+          setError(result.error || "Authentication failed");
+        } else if (result.user) {
+          setUser(result.user);
+        }
+      } catch {
+        setError("An unexpected error occurred");
+      }
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form action={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+          {error}
+        </div>
+      )}
+
       {mode === "signup" && (
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-dark-900 font-jost mb-2">
@@ -40,8 +53,6 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
             name="name"
             type="text"
             required={mode === "signup"}
-            value={formData.name}
-            onChange={handleChange}
             className="w-full px-4 py-3 border border-light-300 rounded-lg focus:ring-2 focus:ring-dark-900 focus:border-transparent outline-none font-jost text-body"
             placeholder="Enter your full name"
           />
@@ -57,8 +68,6 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
           name="email"
           type="email"
           required
-          value={formData.email}
-          onChange={handleChange}
           className="w-full px-4 py-3 border border-light-300 rounded-lg focus:ring-2 focus:ring-dark-900 focus:border-transparent outline-none font-jost text-body"
           placeholder="johndoe@gmail.com"
         />
@@ -74,8 +83,6 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
             name="password"
             type={showPassword ? "text" : "password"}
             required
-            value={formData.password}
-            onChange={handleChange}
             className="w-full px-4 py-3 pr-12 border border-light-300 rounded-lg focus:ring-2 focus:ring-dark-900 focus:border-transparent outline-none font-jost text-body"
             placeholder="minimum 8 characters"
           />
@@ -91,9 +98,10 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
 
       <button
         type="submit"
-        className="w-full bg-orange hover:bg-orange/90 text-light-100 font-jost font-medium py-3 px-4 rounded-lg transition-colors"
+        disabled={isPending}
+        className="w-full bg-orange hover:bg-orange/90 disabled:opacity-50 disabled:cursor-not-allowed text-light-100 font-jost font-medium py-3 px-4 rounded-lg transition-colors"
       >
-        {mode === "signin" ? "Sign In" : "Sign Up"} →
+        {isPending ? "Loading..." : mode === "signin" ? "Sign In" : "Sign Up"} →
       </button>
 
       {mode === "signin" && (
