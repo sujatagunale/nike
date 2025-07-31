@@ -25,19 +25,19 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               <a
-                href="#"
+                href="/products?gender=men"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Men
               </a>
               <a
-                href="#"
+                href="/products?gender=women"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Women
               </a>
               <a
-                href="#"
+                href="/products?gender=unisex"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Kids
@@ -111,19 +111,19 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-light-200">
             <a
-              href="#"
+              href="/products?gender=men"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Men
             </a>
             <a
-              href="#"
+              href="/products?gender=women"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Women
             </a>
             <a
-              href="#"
+              href="/products?gender=unisex"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Kids
