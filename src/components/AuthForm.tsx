@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface AuthFormProps {
   mode: "signin" | "signup";
-  onSubmit: (data: { email: string; password: string; name?: string }) => void;
+  onSubmit: (data: { email: string; password: string; name?: string }) => Promise<void>;
 }
 
 export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
@@ -16,9 +16,9 @@ export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    await onSubmit(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

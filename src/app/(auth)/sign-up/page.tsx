@@ -4,10 +4,24 @@ import React from "react";
 import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import SocialProviders from "@/components/SocialProviders";
+import { signUp } from "@/lib/auth/actions";
 
 export default function SignUp() {
-  const handleSignUp = (data: { email: string; password: string; name?: string }) => {
-    console.log("Sign up data:", data);
+  const handleSignUp = async (data: { email: string; password: string; name?: string }) => {
+    try {
+      const formData = new FormData();
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+      if (data.name) formData.append('name', data.name);
+      
+      const result = await signUp(formData);
+      if (result?.error) {
+        alert(result.error);
+      }
+    } catch (error) {
+      console.error('Sign up error:', error);
+      alert('An error occurred during sign up');
+    }
   };
 
   return (
