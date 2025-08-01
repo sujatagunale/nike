@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 interface NavbarProps {
@@ -24,36 +25,36 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
 
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <a
-                href="#"
+              <Link
+                href="/products?gender=men"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Men
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/products?gender=women"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Women
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/products"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Kids
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/products"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Collections
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Contact
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -110,36 +111,36 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-light-200">
-            <a
-              href="#"
+            <Link
+              href="/products?gender=men"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Men
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/products?gender=women"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Women
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/products"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Kids
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/products"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Collections
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Contact
-            </a>
+            </Link>
             <div className="border-t border-light-300 pt-4">
               <a
                 href="#"
