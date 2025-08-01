@@ -12,7 +12,12 @@ export interface ProductSort {
   sort?: 'featured' | 'newest' | 'price_asc' | 'price_desc';
 }
 
-export type ProductQuery = ProductFilters & ProductSort;
+export interface ProductPagination {
+  page?: number;
+  limit?: number;
+}
+
+export type ProductQuery = ProductFilters & ProductSort & ProductPagination;
 
 export function parseFilters(searchParams: URLSearchParams): ProductQuery {
   const parsed = queryString.parse(searchParams.toString(), { arrayFormat: 'comma' });
@@ -24,6 +29,14 @@ export function parseFilters(searchParams: URLSearchParams): ProductQuery {
     return typeof value === 'string' ? [value] : undefined;
   };
   
+  const parseNumber = (value: unknown, defaultValue: number): number => {
+    if (typeof value === 'string') {
+      const num = parseInt(value, 10);
+      return isNaN(num) ? defaultValue : num;
+    }
+    return defaultValue;
+  };
+  
   return {
     gender: parseStringArray(parsed.gender),
     color: parseStringArray(parsed.color),
@@ -31,6 +44,8 @@ export function parseFilters(searchParams: URLSearchParams): ProductQuery {
     priceRange: typeof parsed.priceRange === 'string' ? parsed.priceRange : undefined,
     category: parseStringArray(parsed.category),
     sort: typeof parsed.sort === 'string' ? parsed.sort as ProductQuery['sort'] : 'featured',
+    page: parseNumber(parsed.page, 1),
+    limit: parseNumber(parsed.limit, 12),
   };
 }
 
