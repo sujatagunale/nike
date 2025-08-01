@@ -14,7 +14,7 @@ export interface ProductSort {
 
 export type ProductQuery = ProductFilters & ProductSort;
 
-export function parseFilters(searchParams: URLSearchParams): ProductQuery {
+export function parseFilters(searchParams: URLSearchParams): ProductQuery & { page?: number; limit?: number } {
   const parsed = queryString.parse(searchParams.toString(), { arrayFormat: 'comma' });
   
   const parseStringArray = (value: unknown): string[] | undefined => {
@@ -24,6 +24,11 @@ export function parseFilters(searchParams: URLSearchParams): ProductQuery {
     return typeof value === 'string' ? [value] : undefined;
   };
   
+  const parseNumber = (value: unknown): number | undefined => {
+    const num = typeof value === 'string' ? parseInt(value, 10) : undefined;
+    return num && num > 0 ? num : undefined;
+  };
+  
   return {
     gender: parseStringArray(parsed.gender),
     color: parseStringArray(parsed.color),
@@ -31,6 +36,8 @@ export function parseFilters(searchParams: URLSearchParams): ProductQuery {
     priceRange: typeof parsed.priceRange === 'string' ? parsed.priceRange : undefined,
     category: parseStringArray(parsed.category),
     sort: typeof parsed.sort === 'string' ? parsed.sort as ProductQuery['sort'] : 'featured',
+    page: parseNumber(parsed.page) || 1,
+    limit: parseNumber(parsed.limit) || 12,
   };
 }
 

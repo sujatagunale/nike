@@ -2,59 +2,11 @@ import { Suspense } from 'react';
 import Card from '@/components/Card';
 import Filters from '@/components/Filters';
 import Sort from '@/components/Sort';
-import { mockProducts, filterOptions } from '@/lib/data/products';
 import { parseFilters } from '@/lib/utils/query';
+import { getAllProducts } from '@/lib/actions/product';
 
 interface ProductsPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
-
-function filterProducts(products: typeof mockProducts, filters: ReturnType<typeof parseFilters>) {
-  let filtered = [...products];
-
-  if (filters.gender?.length) {
-    filtered = filtered.filter(product => 
-      filters.gender!.some(g => product.gender.toLowerCase() === g.toLowerCase())
-    );
-  }
-
-  if (filters.color?.length) {
-    filtered = filtered.filter(product =>
-      filters.color!.some(c => product.colors.some(pc => pc.toLowerCase() === c.toLowerCase()))
-    );
-  }
-
-  if (filters.size?.length) {
-    filtered = filtered.filter(product =>
-      filters.size!.some(s => product.sizes.includes(s))
-    );
-  }
-
-  if (filters.priceRange) {
-    const range = filterOptions.priceRanges.find(r => r.slug === filters.priceRange);
-    if (range) {
-      filtered = filtered.filter(product => {
-        const price = product.salePrice || product.price;
-        return price >= range.min && price <= range.max;
-      });
-    }
-  }
-
-  switch (filters.sort) {
-    case 'price_asc':
-      filtered.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
-      break;
-    case 'price_desc':
-      filtered.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
-      break;
-    case 'newest':
-      filtered.reverse();
-      break;
-    default:
-      break;
-  }
-
-  return filtered;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 function ActiveFilters({ filters }: { filters: ReturnType<typeof parseFilters> }) {
@@ -70,9 +22,15 @@ function ActiveFilters({ filters }: { filters: ReturnType<typeof parseFilters> }
     activeFilters.push(...filters.size.map(s => ({ type: 'Size', value: s })));
   }
   if (filters.priceRange) {
-    const range = filterOptions.priceRanges.find(r => r.slug === filters.priceRange);
-    if (range) {
-      activeFilters.push({ type: 'Price', value: range.label });
+    const priceRanges = {
+      'under-150': 'Under $150',
+      '150-200': '$150 - $200',
+      '200-250': '$200 - $250',
+      'over-250': 'Over $250',
+    };
+    const label = priceRanges[filters.priceRange as keyof typeof priceRanges];
+    if (label) {
+      activeFilters.push({ type: 'Price', value: label });
     }
   }
 
@@ -94,15 +52,16 @@ function ActiveFilters({ filters }: { filters: ReturnType<typeof parseFilters> }
   );
 }
 
-export default function ProductsPage({ searchParams }: ProductsPageProps) {
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const resolvedSearchParams = await searchParams;
   const searchParamsObj = new URLSearchParams(
-    Object.entries(searchParams).flatMap(([key, value]) =>
+    Object.entries(resolvedSearchParams).flatMap(([key, value]) =>
       Array.isArray(value) ? value.map(v => [key, v]) : [[key, value as string]]
     )
   );
   
   const filters = parseFilters(searchParamsObj);
-  const filteredProducts = filterProducts(mockProducts, filters);
+  const { products, totalCount } = await getAllProducts(filters);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -116,7 +75,7 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
         <main className="flex-1">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-heading-3 font-jost font-bold text-dark-900">
-              Products ({filteredProducts.length})
+              Products ({totalCount})
             </h1>
             <Suspense fallback={<div>Loading sort...</div>}>
               <Sort />
@@ -126,20 +85,20 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
           <ActiveFilters filters={filters} />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map(product => (
+            {products.map(product => (
               <Card
                 key={product.id}
                 title={product.name}
                 category={product.category}
-                price={product.salePrice || product.price}
+                price={product.price}
                 image={product.image}
-                colors={product.colors.length}
+                colors={product.colors}
                 badge={product.badge}
               />
             ))}
           </div>
 
-          {filteredProducts.length === 0 && (
+          {products.length === 0 && (
             <div className="text-center py-12">
               <p className="text-dark-700 font-jost text-body mb-4">
                 No products found matching your filters.
