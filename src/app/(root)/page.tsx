@@ -12,25 +12,25 @@ export default function Home() {
           title="Nike Air Max 270"
           category="Running"
           price={100}
-          image="/shoe-1.jpg"
+          image="/shoes/shoe-1.jpg"
         />
         <Card
           title="Nike Air Max 270"
           category="Running"
           price={100}
-          image="/shoe-2.webp"
+          image="/shoes/shoe-2.webp"
         />
         <Card
           title="Nike Air Max 270"
           category="Running"
           price={100}
-          image="/shoe-3.webp"
+          image="/shoes/shoe-3.webp"
         />
         <Card
           title="Nike Air Max 270"
           category="Running"
           price={100}
-          image="/shoe-4.webp"
+          image="/shoes/shoe-4.webp"
           badge="Best Seller"
         />
       </div>
