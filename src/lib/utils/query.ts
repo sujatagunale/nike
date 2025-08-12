@@ -9,10 +9,15 @@ export interface ProductFilters {
 }
 
 export interface ProductSort {
-  sort?: 'featured' | 'newest' | 'price_asc' | 'price_desc';
+  sort?: 'featured' | 'newest' | 'oldest' | 'price_asc' | 'price_desc';
 }
 
-export type ProductQuery = ProductFilters & ProductSort;
+export interface ProductPagination {
+  page?: number;
+  limit?: number;
+}
+
+export type ProductQuery = ProductFilters & ProductSort & ProductPagination;
 
 export function parseFilters(searchParams: URLSearchParams): ProductQuery {
   const parsed = queryString.parse(searchParams.toString(), { arrayFormat: 'comma' });
@@ -31,6 +36,8 @@ export function parseFilters(searchParams: URLSearchParams): ProductQuery {
     priceRange: typeof parsed.priceRange === 'string' ? parsed.priceRange : undefined,
     category: parseStringArray(parsed.category),
     sort: typeof parsed.sort === 'string' ? parsed.sort as ProductQuery['sort'] : 'featured',
+    page: typeof parsed.page === 'string' ? parseInt(parsed.page, 10) : undefined,
+    limit: typeof parsed.limit === 'string' ? parseInt(parsed.limit, 10) : undefined,
   };
 }
 
