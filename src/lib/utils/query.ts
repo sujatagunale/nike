@@ -51,6 +51,39 @@ export function updateUrlFilters(filters: Partial<ProductQuery>, router: { push:
   router.push(url, { scroll: false });
 }
 
+export function parseFilterParams(searchParams: URLSearchParams): ProductQuery {
+  return parseFilters(searchParams);
+}
+
+export function buildProductQueryObject(filters: ProductQuery) {
+  const queryConditions: Array<{ field: string; values?: string[]; value?: string }> = [];
+  
+  if (filters.gender?.length) {
+    queryConditions.push({ field: 'gender', values: filters.gender });
+  }
+  
+  if (filters.color?.length) {
+    queryConditions.push({ field: 'color', values: filters.color });
+  }
+  
+  if (filters.size?.length) {
+    queryConditions.push({ field: 'size', values: filters.size });
+  }
+  
+  if (filters.category?.length) {
+    queryConditions.push({ field: 'category', values: filters.category });
+  }
+  
+  if (filters.priceRange) {
+    queryConditions.push({ field: 'priceRange', value: filters.priceRange });
+  }
+  
+  return {
+    conditions: queryConditions,
+    sort: filters.sort || 'featured',
+  };
+}
+
 export function removeFilter(filterKey: keyof ProductFilters, value: string, currentFilters: ProductQuery, router: { push: (url: string, options?: { scroll: boolean }) => void }, pathname: string) {
   const newFilters = { ...currentFilters };
   
