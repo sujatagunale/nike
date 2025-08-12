@@ -6,7 +6,7 @@ import { mockProducts, filterOptions } from '@/lib/data/products';
 import { parseFilters } from '@/lib/utils/query';
 
 interface ProductsPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 function filterProducts(products: typeof mockProducts, filters: ReturnType<typeof parseFilters>) {
@@ -94,9 +94,10 @@ function ActiveFilters({ filters }: { filters: ReturnType<typeof parseFilters> }
   );
 }
 
-export default function ProductsPage({ searchParams }: ProductsPageProps) {
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const resolvedSearchParams = await searchParams;
   const searchParamsObj = new URLSearchParams(
-    Object.entries(searchParams).flatMap(([key, value]) =>
+    Object.entries(resolvedSearchParams).flatMap(([key, value]) =>
       Array.isArray(value) ? value.map(v => [key, v]) : [[key, value as string]]
     )
   );
