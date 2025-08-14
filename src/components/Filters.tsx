@@ -2,14 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Color, filterOptions, Gender, Size } from "@/lib/data/products";
+import { filterOptions } from "@/lib/data/products";
 import {
   mergeQuery,
   parseQuery,
   ProductQuery,
   toggleMultiValue,
-  removeKey,
-  stringifyQuery,
 } from "@/lib/utils/query";
 
 type GroupKey = "gender" | "size" | "color" | "price";
@@ -49,11 +47,6 @@ export default function Filters() {
     router.push(pathname, { scroll: false });
   }
 
-  function onClearKey(key: GroupKey) {
-    const next = removeKey(searchParams.toString(), key);
-    const url = next ? `${pathname}?${next}` : pathname;
-    router.push(url, { scroll: false });
-  }
 
   useEffect(() => {
     function onEsc(e: KeyboardEvent) {

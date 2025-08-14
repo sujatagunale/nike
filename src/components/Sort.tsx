@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { mergeQuery, parseQuery, ProductSort, stringifyQuery } from "@/lib/utils/query";
+import { mergeQuery, parseQuery, ProductSort } from "@/lib/utils/query";
 
 const options: { label: string; value: ProductSort }[] = [
   { label: "Featured", value: "featured" },

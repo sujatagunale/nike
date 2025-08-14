@@ -74,3 +74,10 @@ export function removeKey(
     skipEmptyString: true,
   });
 }
+export function stringifySearchParamsObject(obj: Record<string, string | string[] | undefined>): string {
+  return qs.stringify(obj, {
+    arrayFormat: "comma",
+    skipNull: true,
+    skipEmptyString: true,
+  });
+}

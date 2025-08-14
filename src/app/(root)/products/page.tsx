@@ -2,7 +2,7 @@ import Card from "@/components/Card";
 import Filters from "@/components/Filters";
 import Sort from "@/components/Sort";
 import { mockProducts } from "@/lib/data/products";
-import { parseQuery, ProductQuery, ProductSort } from "@/lib/utils/query";
+import { parseQuery, ProductQuery, ProductSort, stringifySearchParamsObject } from "@/lib/utils/query";
 
 function filterProducts(query: ProductQuery) {
   const byGender = (p: typeof mockProducts[number]) =>
@@ -55,7 +55,7 @@ export default function ProductsPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const query = parseQuery(new URLSearchParams(searchParams as any).toString());
+  const query = parseQuery(stringifySearchParamsObject(searchParams));
   const filtered = filterProducts(query);
   const sorted = sortProducts(filtered, query.sort);
 
