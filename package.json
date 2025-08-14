@@ -26,7 +26,8 @@
     "react-dom": "19.1.0",
     "uuid": "^11.1.0",
     "zod": "^4.0.14",
-    "zustand": "^5.0.6"
+    "zustand": "^5.0.6",
+    "query-string": "^9.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
