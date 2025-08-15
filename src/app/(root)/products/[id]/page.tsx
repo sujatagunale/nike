@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ImageOff,
   ChevronLeft,
@@ -123,21 +123,34 @@ function useGallery(images: string[]) {
       return n;
     });
   }, []);
-  return { valid, mainIdx, setMainIdx, onError };
+  const onMainError = useCallback(
+    (src: string) => {
+      setHidden((prev) => {
+        const n = new Set(prev);
+        n.add(src);
+        return n;
+      });
+      setMainIdx(0);
+    },
+    []
+  );
+  return { valid, mainIdx, setMainIdx, onError, onMainError };
 }
 
 export default function ProductDetails({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const product = useMemo(() => getMockProduct(params.id), [params.id]);
+  const { id } = use(params);
+  const product = useMemo(() => getMockProduct(id), [id]);
 
   const availableColors = useMemo(
     () =>
-      (product.colors || []).filter(
-        (c) => (c.images || []).filter((u) => !!u && u.trim().length > 0).length
-      ),
+      (product.colors || []).filter((c) => {
+        const imgs = (c.images || []).filter((u) => !!u && u.trim().length > 0);
+        return imgs.length > 0;
+      }),
     [product.colors]
   );
   const [activeColorIdx, setActiveColorIdx] = useState(0);
@@ -151,7 +164,7 @@ export default function ProductDetails({
       ? availableColors[activeColorIdx].images
       : product.images;
 
-  const { valid, mainIdx, setMainIdx, onError } = useGallery(colorImages);
+  const { valid, mainIdx, setMainIdx, onError, onMainError } = useGallery(colorImages);
   const hasImages = valid.length > 0;
 
   const [loading, setLoading] = useState(true);
@@ -159,6 +172,12 @@ export default function ProductDetails({
     const t = setTimeout(() => setLoading(false), 300);
     return () => clearTimeout(t);
   }, []);
+  useEffect(() => {
+    if (!hasImages && availableColors.length > 0) {
+      setActiveColorIdx(0);
+    }
+  }, [hasImages, availableColors.length]);
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8">
@@ -213,7 +232,7 @@ export default function ProductDetails({
                     alt={product.title}
                     fill
                     className="object-cover"
-                    onError={() => onError(valid[mainIdx])}
+                    onError={() => onMainError(valid[mainIdx])}
                     priority
                   />
                   <div className="absolute bottom-4 right-4 flex items-center gap-2">
