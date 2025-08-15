@@ -15,13 +15,15 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
     <nav className="bg-light-100 border-b border-light-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Image
-            src="/logo.svg"
-            alt="Nike"
-            width={32}
-            height={12}
-            className="grayscale invert brightness-100"
-          />
+          <Link href="/">
+            <Image
+              src="/logo.svg"
+              alt="Nike"
+              width={32}
+              height={12}
+              className="grayscale invert brightness-100"
+            />
+          </Link>
 
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Props = {
   images: string[];
@@ -67,35 +67,35 @@ export default function ProductGallery({ images, title }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-[4rem_1fr] gap-4">
-      <div className="flex flex-col gap-3">
-        {valid.map((src, i) => (
-          <button
-            key={src}
-            onClick={() => setIndex(i)}
-            className={`relative rounded-lg overflow-hidden border ${
-              i === index ? "border-dark-900" : "border-transparent"
-            } focus:outline-none focus-visible:ring-2 focus-visible:ring-dark-900`}
-            aria-label={`View image ${i + 1}`}
-          >
-            <div className="relative w-16 h-16">
-              <Image
-                src={src}
-                alt={`${title} thumbnail ${i + 1}`}
-                fill
-                sizes="64px"
-                className="object-cover"
-                onError={() => onThumbError(src)}
-              />
-            </div>
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-row gap-4">
+      {valid.length > 1 && (
+        <div className="flex flex-col gap-3">
+          {valid.map((src, i) => (
+            <button
+              key={src}
+              onClick={() => setIndex(i)}
+              className={`relative rounded-lg overflow-hidden border ${
+                i === index ? "border-dark-900" : "border-transparent"
+              } focus:outline-none focus-visible:ring-2 focus-visible:ring-dark-900`}
+              aria-label={`View image ${i + 1}`}
+            >
+              <div className="relative size-16">
+                <Image
+                  src={src}
+                  alt={`${title} thumbnail ${i + 1}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div
         ref={mainRef}
         tabIndex={0}
-        className="relative rounded-lg bg-light-200 overflow-hidden aspect-[4/5] focus:outline-none focus-visible:ring-2 focus-visible:ring-dark-900"
+        className="flex-1 relative rounded-lg bg-light-200 overflow-hidden aspect-[4/5] focus:outline-none focus-visible:ring-2 focus-visible:ring-dark-900"
         aria-label="Product gallery"
       >
         {current ? (
