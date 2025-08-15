@@ -300,3 +300,88 @@ export async function getProduct(productId: string): Promise<ProductDetail | nul
     })),
   };
 }
+export async function getRecommendedProducts(productId: string, limit = 6): Promise<ProductListItem[]> {
+  const baseRows = await db
+    .select({
+      id: products.id,
+      brandId: brands.id,
+      categoryId: categories.id,
+      genderId: genders.id,
+    })
+    .from(products)
+    .leftJoin(brands, eq(products.brandId, brands.id))
+    .leftJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(genders, eq(products.genderId, genders.id))
+    .where(eq(products.id, productId))
+    .limit(1);
+
+  if (!baseRows.length) return [];
+
+  const base = baseRows[0];
+
+  const priceExpr = sql<number>`coalesce(${productVariants.salePrice}, ${productVariants.price})`;
+  const imageExpr = sql<string | null>`
+    coalesce(
+      max(case when ${productImages.isPrimary} = true then ${productImages.url} end),
+      max(${productImages.url})
+    )
+  `;
+
+  const rows = await db
+    .select({
+      id: products.id,
+      name: products.name,
+      brandId: brands.id,
+      brandName: brands.name,
+      brandSlug: brands.slug,
+      categoryId: categories.id,
+      categoryName: categories.name,
+      categorySlug: categories.slug,
+      genderId: genders.id,
+      genderLabel: genders.label,
+      genderSlug: genders.slug,
+      minPrice: sql<number>`min(${priceExpr})`,
+      maxPrice: sql<number>`max(${priceExpr})`,
+      colorCount: sql<number>`count(distinct ${productVariants.colorId})`,
+      imageUrl: imageExpr,
+      score: sql<number>`
+        (case when ${brands.id} = ${base.brandId} then 2 else 0 end) +
+        (case when ${categories.id} = ${base.categoryId} then 1 else 0 end) +
+        (case when ${genders.id} = ${base.genderId} then 1 else 0 end)
+      `,
+    })
+    .from(products)
+    .leftJoin(brands, eq(products.brandId, brands.id))
+    .leftJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(genders, eq(products.genderId, genders.id))
+    .leftJoin(productVariants, eq(productVariants.productId, products.id))
+    .leftJoin(productImages, eq(productImages.productId, products.id))
+    .where(and(eq(products.isPublished, true), sql`${products.id} <> ${productId}`))
+    .groupBy(
+      products.id,
+      products.name,
+      brands.id,
+      brands.name,
+      brands.slug,
+      categories.id,
+      categories.name,
+      categories.slug,
+      genders.id,
+      genders.label,
+      genders.slug
+    )
+    .orderBy(desc(sql`score`), desc(products.createdAt))
+    .limit(limit);
+
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    brand: { id: r.brandId!, name: r.brandName!, slug: r.brandSlug! },
+    category: { id: r.categoryId!, name: r.categoryName!, slug: r.categorySlug! },
+    gender: { id: r.genderId!, label: r.genderLabel!, slug: r.genderSlug! },
+    minPrice: Number(r.minPrice ?? 0),
+    maxPrice: Number(r.maxPrice ?? 0),
+    colorCount: Number(r.colorCount ?? 0),
+    imageUrl: r.imageUrl ?? null,
+  }));
+}
