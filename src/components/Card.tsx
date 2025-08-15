@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface CardProps {
   title: string;
@@ -7,6 +8,7 @@ interface CardProps {
   image: string;
   colors?: number;
   badge?: string;
+  href?: string;
 }
 
 export default function Card({
@@ -16,9 +18,19 @@ export default function Card({
   image,
   colors = 1,
   badge,
+  href,
 }: CardProps) {
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
+    href ? (
+      <Link href={href} className="block group cursor-pointer">
+        {children}
+      </Link>
+    ) : (
+      <div className="group cursor-pointer">{children}</div>
+    );
+
   return (
-    <div className="group cursor-pointer">
+    <Wrapper>
       <div className="relative overflow-hidden rounded-lg">
         {badge && (
           <div className="absolute top-4 left-4 z-10">
@@ -53,6 +65,6 @@ export default function Card({
           )}
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 }

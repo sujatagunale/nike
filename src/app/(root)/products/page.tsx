@@ -94,6 +94,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                     price={p.minPrice}
                     image={p.imageUrl || "/shoes/shoe-1.jpg"}
                     colors={p.colorCount}
+                    href={`/products/${p.id}`}
                   />
                 ))}
               </div>
