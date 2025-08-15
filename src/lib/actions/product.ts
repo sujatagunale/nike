@@ -10,6 +10,8 @@ import {
   genders,
   colors,
   sizes,
+  reviews as reviewsTable,
+  user as userTable,
 } from "@/lib/db/schema";
 import {
   and,
@@ -20,6 +22,7 @@ import {
   sql,
   asc,
   desc,
+  ne,
   type SQL,
 } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
@@ -299,4 +302,101 @@ export async function getProduct(productId: string): Promise<ProductDetail | nul
       },
     })),
   };
+}
+
+export type ReviewItem = {
+  id: string;
+  author: string;
+  rating: number;
+  title?: string;
+  content: string;
+  createdAt: string;
+};
+
+export async function getProductReviews(productId: string): Promise<ReviewItem[]> {
+  const rows = await db
+    .select({
+      id: reviewsTable.id,
+      rating: reviewsTable.rating,
+      comment: reviewsTable.comment,
+      createdAt: reviewsTable.createdAt,
+      userName: userTable.name,
+      userEmail: userTable.email,
+    })
+    .from(reviewsTable)
+    .innerJoin(userTable, eq(reviewsTable.userId, userTable.id))
+    .where(eq(reviewsTable.productId, productId))
+    .orderBy(desc(reviewsTable.createdAt));
+
+  return rows.map((r) => ({
+    id: r.id,
+    author: r.userName ?? r.userEmail ?? "Anonymous",
+    rating: r.rating,
+    title: undefined,
+    content: r.comment ?? "",
+    createdAt: r.createdAt?.toISOString?.() ?? new Date(r.createdAt as unknown as string).toISOString(),
+  }));
+}
+
+export type RecommendedProduct = {
+  id: string;
+  title: string;
+  price: number;
+  image: string | null;
+};
+
+export async function getRecommendedProducts(productId: string, limit = 6): Promise<RecommendedProduct[]> {
+  const base = await db
+    .select({
+      id: products.id,
+      categoryId: products.categoryId,
+      brandId: products.brandId,
+      genderId: products.genderId,
+    })
+    .from(products)
+    .where(eq(products.id, productId))
+    .limit(1);
+
+  if (!base.length) return [];
+
+  const { categoryId, brandId, genderId } = base[0]!;
+
+  const priceExpr = sql<number>`coalesce(${productVariants.salePrice}, ${productVariants.price})`;
+  const imageExpr = sql<string | null>`
+    coalesce(
+      max(case when ${productImages.isPrimary} = true then ${productImages.url} end),
+      max(${productImages.url})
+    )
+  `;
+
+  const rows = await db
+    .select({
+      id: products.id,
+      name: products.name,
+      price: sql<number>`min(${priceExpr})`,
+      image: imageExpr,
+    })
+    .from(products)
+    .leftJoin(productVariants, eq(productVariants.productId, products.id))
+    .leftJoin(productImages, eq(productImages.productId, products.id))
+    .where(
+      and(
+        eq(products.isPublished, true),
+        ne(products.id, productId),
+        or(
+          eq(products.categoryId, categoryId),
+          and(eq(products.brandId, brandId), eq(products.genderId, genderId))
+        )
+      )
+    )
+    .groupBy(products.id, products.name)
+    .orderBy(asc(products.createdAt))
+    .limit(Math.max(4, Math.min(6, limit)));
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.name,
+    price: Number(r.price ?? 0),
+    image: r.image ?? null,
+  }));
 }
