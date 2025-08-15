@@ -54,7 +54,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     references: [productVariants.id],
     relationName: "defaultVariant",
   }),
-  variants: many(productVariants),
+  variants: many(productVariants, { relationName: "product" }),
   images: many(productImages),
   reviews: many(reviews),
   wishlists: many(wishlists),
