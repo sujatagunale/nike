@@ -5,8 +5,9 @@ import { assertProductOrNotFound } from "@/lib/mocks/productById";
 import { parseIdParam } from "@/lib/utils/ids";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const id = parseIdParam(params?.id);
+export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: rawId } = await params;
+  const id = parseIdParam(rawId);
   if (!id) {
     return (
       <div className="container mx-auto px-4 py-12">
