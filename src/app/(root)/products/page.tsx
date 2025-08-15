@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Card from "@/components/Card";
 import Filters from "@/components/Filters";
 import Sort from "@/components/Sort";
@@ -87,14 +88,15 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {products.map((p) => (
-                  <Card
-                    key={p.id}
-                    title={p.name}
-                    category={p.category.name}
-                    price={p.minPrice}
-                    image={p.imageUrl || "/shoes/shoe-1.jpg"}
-                    colors={p.colorCount}
-                  />
+                  <Link key={p.id} href={`/products/${p.id}`} className="block">
+                    <Card
+                      title={p.name}
+                      category={p.category.name}
+                      price={p.minPrice}
+                      image={p.imageUrl || "/shoes/shoe-1.jpg"}
+                      colors={p.colorCount}
+                    />
+                  </Link>
                 ))}
               </div>
               <div className="flex items-center justify-center gap-3 mt-8">
