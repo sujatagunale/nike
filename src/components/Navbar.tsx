@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 interface NavbarProps {
@@ -14,34 +15,36 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
     <nav className="bg-light-100 border-b border-light-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Image
-            src="/logo.svg"
-            alt="Nike"
-            width={32}
-            height={12}
-            className="grayscale invert brightness-100"
-          />
+          <Link href="/">
+            <Image
+              src="/logo.svg"
+              alt="Nike"
+              width={32}
+              height={12}
+              className="grayscale invert brightness-100"
+            />
+          </Link>
 
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <a
+              <Link
                 href="/products?gender=men"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Men
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/products?gender=women"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Women
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/products?gender=unisex"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
               >
                 Kids
-              </a>
+              </Link>
               <a
                 href="#"
                 className="text-dark-900 hover:text-dark-700 font-jost text-body font-medium"
@@ -110,24 +113,24 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-light-200">
-            <a
+            <Link
               href="/products?gender=men"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Men
-            </a>
-            <a
+            </Link>
+            <Link
               href="/products?gender=women"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Women
-            </a>
-            <a
+            </Link>
+            <Link
               href="/products?gender=unisex"
               className="block px-3 py-2 text-dark-900 font-jost text-body"
             >
               Kids
-            </a>
+            </Link>
             <a
               href="#"
               className="block px-3 py-2 text-dark-900 font-jost text-body"

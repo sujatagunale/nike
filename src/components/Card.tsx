@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface CardProps {
   title: string;
@@ -7,6 +8,7 @@ interface CardProps {
   image: string;
   colors?: number;
   badge?: string;
+  href?: string;
 }
 
 export default function Card({
@@ -16,9 +18,10 @@ export default function Card({
   image,
   colors = 1,
   badge,
+  href,
 }: CardProps) {
-  return (
-    <div className="group cursor-pointer">
+  const Content = (
+    <>
       <div className="relative overflow-hidden rounded-lg">
         {badge && (
           <div className="absolute top-4 left-4 z-10">
@@ -53,6 +56,16 @@ export default function Card({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="group cursor-pointer block">
+        {Content}
+      </Link>
+    );
+  }
+
+  return <div className="group cursor-pointer">{Content}</div>;
 }
