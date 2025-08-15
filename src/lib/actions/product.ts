@@ -251,54 +251,95 @@ export type ProductDetail = {
 };
 
 export async function getProduct(productId: string): Promise<ProductDetail | null> {
-  const row = await db.query.products.findFirst({
-    where: eq(products.id, productId),
-    with: {
-      brand: true,
-      category: true,
-      gender: true,
-      images: {
-        orderBy: (img, { desc, asc }) => [desc(img.isPrimary), asc(img.sortOrder)],
-      },
-      variants: {
-        with: {
-          color: true,
-          size: true,
-        },
-      },
-    },
-  });
-  if (!row) return null;
+  const coreRows = await db
+    .select({
+      id: products.id,
+      name: products.name,
+      description: products.description,
+      brandId: brands.id,
+      brandName: brands.name,
+      brandSlug: brands.slug,
+      categoryId: categories.id,
+      categoryName: categories.name,
+      categorySlug: categories.slug,
+      genderId: genders.id,
+      genderLabel: genders.label,
+      genderSlug: genders.slug,
+    })
+    .from(products)
+    .leftJoin(brands, eq(products.brandId, brands.id))
+    .leftJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(genders, eq(products.genderId, genders.id))
+    .where(eq(products.id, productId))
+    .limit(1);
+
+  if (!coreRows.length) return null;
+  const core = coreRows[0]!;
+
+  const imageRows = await db
+    .select({
+      id: productImages.id,
+      url: productImages.url,
+      isPrimary: productImages.isPrimary,
+      sortOrder: productImages.sortOrder,
+    })
+    .from(productImages)
+    .where(eq(productImages.productId, productId))
+    .orderBy(desc(productImages.isPrimary), asc(productImages.sortOrder));
+
+  const variantRows = await db
+    .select({
+      id: productVariants.id,
+      sku: productVariants.sku,
+      price: productVariants.price,
+      salePrice: productVariants.salePrice,
+      inStock: productVariants.inStock,
+      colorId: colors.id,
+      colorName: colors.name,
+      colorSlug: colors.slug,
+      colorHex: colors.hexCode,
+      sizeId: sizes.id,
+      sizeName: sizes.name,
+      sizeSlug: sizes.slug,
+      sizeOrder: sizes.sortOrder,
+    })
+    .from(productVariants)
+    .leftJoin(colors, eq(productVariants.colorId, colors.id))
+    .leftJoin(sizes, eq(productVariants.sizeId, sizes.id))
+    .where(eq(productVariants.productId, productId));
+
   return {
-    id: row.id,
-    name: row.name,
-    description: row.description ?? null,
-    brand: { id: row.brand.id, name: row.brand.name, slug: row.brand.slug },
-    category: { id: row.category.id, name: row.category.name, slug: row.category.slug },
-    gender: { id: row.gender.id, label: row.gender.label, slug: row.gender.slug },
-    images: row.images.map((i) => ({
-      id: i.id,
-      url: i.url,
-      isPrimary: i.isPrimary,
-      sortOrder: i.sortOrder,
-    })),
-    variants: row.variants.map((v) => ({
+    id: core.id,
+    name: core.name,
+    description: core.description ?? null,
+    brand: { id: core.brandId!, name: core.brandName!, slug: core.brandSlug! },
+    category: { id: core.categoryId!, name: core.categoryName!, slug: core.categorySlug! },
+    gender: { id: core.genderId!, label: core.genderLabel!, slug: core.genderSlug! },
+    images: imageRows
+      .filter((i) => !!i.url)
+      .map((i) => ({
+        id: i.id,
+        url: i.url,
+        isPrimary: i.isPrimary,
+        sortOrder: i.sortOrder,
+      })),
+    variants: variantRows.map((v) => ({
       id: v.id,
       sku: v.sku,
       price: Number(v.price),
       salePrice: v.salePrice != null ? Number(v.salePrice) : null,
       inStock: v.inStock,
       color: {
-        id: v.color.id,
-        name: v.color.name,
-        slug: v.color.slug,
-        hexCode: v.color.hexCode,
+        id: v.colorId!,
+        name: v.colorName!,
+        slug: v.colorSlug!,
+        hexCode: v.colorHex!,
       },
       size: {
-        id: v.size.id,
-        name: v.size.name,
-        slug: v.size.slug,
-        sortOrder: v.size.sortOrder,
+        id: v.sizeId!,
+        name: v.sizeName!,
+        slug: v.sizeSlug!,
+        sortOrder: v.sizeOrder!,
       },
     })),
   };
