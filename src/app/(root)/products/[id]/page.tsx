@@ -7,11 +7,12 @@ import ReviewsSkeleton from "@/components/product/ReviewsSkeleton";
 import AlsoLikeSkeleton from "@/components/product/AlsoLikeSkeleton";
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export default async function ProductDetailsPage({ params }: PageProps) {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
 
   if (!product) {
     return (
