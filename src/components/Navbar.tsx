@@ -3,13 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/lib/store/cart";
 
-interface NavbarProps {
-  cartItemCount?: number;
-}
-
-export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
+export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const cartItemCount = useCart((s) => s.totalItems);
 
   return (
     <nav className="bg-light-100 border-b border-light-300">
@@ -79,11 +78,10 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
             </button>
             <span className="font-jost text-body">Search</span>
 
-            <button className="text-dark-900 hover:text-dark-700 flex items-center space-x-1">
-              <span className="font-jost text-body">
-                My Cart ({cartItemCount})
-              </span>
-            </button>
+            <Link href="/cart" className="text-dark-900 hover:text-dark-700 flex items-center space-x-2">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="font-jost text-body">My Cart ({cartItemCount})</span>
+            </Link>
           </div>
 
           <div className="md:hidden">
@@ -150,12 +148,12 @@ export default function Navbar({ cartItemCount = 2 }: NavbarProps) {
               >
                 Search
               </a>
-              <a
-                href="#"
+              <Link
+                href="/cart"
                 className="block px-3 py-2 text-dark-900 font-jost text-body"
               >
                 My Cart ({cartItemCount})
-              </a>
+              </Link>
             </div>
           </div>
         </div>

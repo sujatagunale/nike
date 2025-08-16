@@ -7,9 +7,10 @@ import {
   getProductReviews,
   getRecommendedProducts,
 } from "@/lib/actions/product";
-import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import AddToCartButton from "@/components/AddToCartButton";
 
 function NotFoundBlock() {
   return (
@@ -183,10 +184,22 @@ export default async function ProductDetailPage({
           </div>
 
           <div className="mt-6 flex flex-col gap-3">
-            <button className="flex-1 min-h-12 rounded-full bg-dark-900 text-light-100 font-jost text-body-medium flex items-center justify-center gap-2">
-              <ShoppingBag className="h-5 w-5" />
-              Add to Bag
-            </button>
+            {(() => {
+              const defaultVariantId = product.defaultVariantId || product.variants[0]?.id;
+              const v = product.variants.find((vv) => vv.id === defaultVariantId) || product.variants[0];
+              const variant = v
+                ? {
+                    id: v.id,
+                    productId: product.id,
+                    name: product.name,
+                    color: v.color.name,
+                    size: v.size.name,
+                    price: Number(v.salePrice ?? v.price),
+                    image: (v.images[0]?.url || product.images[0]?.url) ?? null,
+                  }
+                : null;
+              return variant ? <AddToCartButton variant={variant} /> : null;
+            })()}
             <button className="flex-1 min-h-12 rounded-full border border-light-300 bg-light-100 text-dark-900 font-jost text-body-medium flex items-center justify-center gap-2">
               <Heart className="h-5 w-5" />
               Add to Favorites

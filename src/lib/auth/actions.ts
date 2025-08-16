@@ -1,11 +1,12 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../db";
 import { guest } from "../db/schema";
+import { carts, cartItems } from "../db/schema/carts";
 import { auth } from "./config";
 import { signInSchema, signUpSchema } from "./schemas";
 
@@ -140,25 +141,47 @@ export async function mergeGuestCartWithUserCart(userId: string) {
   try {
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("guest_session")?.value;
+    if (!sessionToken) return { success: true };
 
-    if (!sessionToken) {
-      return { success: true };
-    }
-
-    const guestSession = await db
+    const guestRows = await db
       .select()
       .from(guest)
       .where(eq(guest.sessionToken, sessionToken))
       .limit(1);
 
-    if (guestSession.length === 0) {
-      return { success: true };
+    if (!guestRows.length) return { success: true };
+    const guestRow = guestRows[0];
+
+    const guestCart = await db.query.carts.findFirst({ where: eq(carts.guestId, guestRow.id) });
+    const guestItems = guestCart
+      ? await db.select().from(cartItems).where(eq(cartItems.cartId, guestCart.id))
+      : [];
+
+    let userCart = await db.query.carts.findFirst({ where: eq(carts.userId, userId) });
+    if (!userCart) {
+      const [created] = await db.insert(carts).values({ userId }).returning();
+      userCart = created;
     }
 
-    console.log(
-      `Merging guest cart for session ${sessionToken} with user ${userId}`
-    );
+    for (const gi of guestItems) {
+      const existing = await db.query.cartItems.findFirst({
+        where: and(eq(cartItems.cartId, userCart.id), eq(cartItems.productVariantId, gi.productVariantId)),
+      });
+      if (existing) {
+        await db.update(cartItems).set({ quantity: existing.quantity + gi.quantity }).where(eq(cartItems.id, existing.id));
+      } else {
+        await db.insert(cartItems).values({
+          cartId: userCart.id,
+          productVariantId: gi.productVariantId,
+          quantity: gi.quantity,
+        });
+      }
+    }
 
+    if (guestCart) {
+      await db.delete(cartItems).where(eq(cartItems.cartId, guestCart.id));
+      await db.delete(carts).where(eq(carts.id, guestCart.id));
+    }
     await db.delete(guest).where(eq(guest.sessionToken, sessionToken));
     cookieStore.delete("guest_session");
 
