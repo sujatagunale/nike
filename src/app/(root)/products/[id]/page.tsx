@@ -30,8 +30,8 @@ function NotFoundBlock() {
   );
 }
 
-async function ReviewsSection({ productId }: { productId: string }) {
-  const reviews = await getProductReviews(productId);
+async function ReviewsSection() {
+  const reviews = await getProductReviews();
   if (!reviews.length) return null;
   const items = reviews.slice(0, 10);
   return (
@@ -228,7 +228,7 @@ export default async function ProductDetailPage({
                 </CollapsibleSection>
               }
             >
-              <ReviewsSection productId={product.id} />
+              <ReviewsSection />
             </Suspense>
           </div>
         </section>

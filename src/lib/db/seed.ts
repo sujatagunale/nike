@@ -42,6 +42,11 @@ export async function seed() {
   console.log('🌱 Starting database seed...');
 
   try {
+    if (!db) {
+      console.warn('Database not available, skipping seed operation');
+      return;
+    }
+
     ensureStaticUploadsDir();
 
     console.log('📦 Seeding brands...');
