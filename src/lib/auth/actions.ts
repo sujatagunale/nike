@@ -84,6 +84,11 @@ export async function createGuestSession() {
     const sessionToken = uuidv4();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
+    if (!db) {
+      console.warn("Database not available, skipping guest session creation");
+      return { success: true, sessionToken };
+    }
+
     await db.insert(guest).values({
       id: uuidv4(),
       sessionToken,
@@ -115,6 +120,11 @@ export async function getGuestSession() {
       return null;
     }
 
+    if (!db) {
+      console.warn("Database not available, returning null for guest session");
+      return null;
+    }
+
     const guestSession = await db
       .select()
       .from(guest)
@@ -122,7 +132,7 @@ export async function getGuestSession() {
       .limit(1);
 
     if (guestSession.length === 0 || guestSession[0].expiresAt < new Date()) {
-      if (guestSession.length > 0) {
+      if (guestSession.length > 0 && db) {
         await db.delete(guest).where(eq(guest.sessionToken, sessionToken));
       }
       cookieStore.delete("guest_session");
@@ -145,6 +155,11 @@ export async function mergeGuestCartWithUserCart(userId: string) {
       return { success: true };
     }
 
+    if (!db) {
+      console.warn("Database not available, skipping guest cart merge");
+      return { success: true };
+    }
+
     const guestSession = await db
       .select()
       .from(guest)
@@ -159,7 +174,9 @@ export async function mergeGuestCartWithUserCart(userId: string) {
       `Merging guest cart for session ${sessionToken} with user ${userId}`
     );
 
-    await db.delete(guest).where(eq(guest.sessionToken, sessionToken));
+    if (db) {
+      await db.delete(guest).where(eq(guest.sessionToken, sessionToken));
+    }
     cookieStore.delete("guest_session");
 
     return { success: true };
