@@ -13,8 +13,11 @@ export const orders = pgTable('orders', {
   userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   status: text('status', { enum: orderStatusEnum }).notNull().default('pending'),
   totalAmount: numeric('total_amount', { precision: 10, scale: 2 }).notNull(),
-  shippingAddressId: uuid('shipping_address_id').notNull().references(() => addresses.id),
-  billingAddressId: uuid('billing_address_id').notNull().references(() => addresses.id),
+  totalAmountCents: integer('total_amount_cents'),
+  shippingAddressId: uuid('shipping_address_id').references(() => addresses.id),
+  billingAddressId: uuid('billing_address_id').references(() => addresses.id),
+  stripeSessionId: text('stripe_session_id'),
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -25,6 +28,7 @@ export const orderItems = pgTable('order_items', {
   productVariantId: uuid('product_variant_id').notNull().references(() => productVariants.id),
   quantity: integer('quantity').notNull(),
   priceAtPurchase: numeric('price_at_purchase', { precision: 10, scale: 2 }).notNull(),
+  priceAtPurchaseCents: integer('price_at_purchase_cents'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
